@@ -153,14 +153,19 @@ class AioModel(Model):
     @classmethod
     async def async_iterate(cls,
                             fetch_size: int,
+                            query_str: str = None,
                             fields: list = None,
                             limit: int = None):
         """Iteration by fetch_size
         """
-        statement = SimpleStatement(
-            str(SelectStatement(
-                cls.column_family_name(), fields=fields, limit=limit)),
-            fetch_size=fetch_size)
+        if query_str:
+            statement = SimpleStatement(query_str, fetch_size=fetch_size)
+        else:
+            statement = SimpleStatement(
+                str(SelectStatement(
+                    cls.column_family_name(), fields=fields, limit=limit)),
+                fetch_size=fetch_size)
+        
         connection = conn.get_connection()
 
         paging_state = None
